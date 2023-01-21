@@ -75,7 +75,6 @@ EOF
 }
 
 
-
 output "aws_instance_public_dns-1" {
   value = aws_instance.nginx[0].public_dns
 }

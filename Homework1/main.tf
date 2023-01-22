@@ -23,7 +23,7 @@ resource "aws_instance" "nginx1" {
   sudo amazon-linux-extras install nginx1
   sudo service nginx start
   sudo rm /usr/share/nginx/html/index.html
-  sudo echo "Welcome to Grandpa's Whiskey" > /usr/share/nginx/html/index.html
+  sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey</body></html>" > /usr/share/nginx/html/index.html
 EOF
 
   tags = {

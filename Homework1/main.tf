@@ -3,7 +3,7 @@ resource "aws_instance" "nginx1" {
   ami                    = "ami-0b5eea76982371e91"
   instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.nginx-sg.id]
-
+  key_name               = "provision"
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"

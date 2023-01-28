@@ -4,7 +4,7 @@ resource "aws_network_interface" "eth0" {
   subnet_id   = aws_subnet.my_subnet.id
   private_ips = ["10.0.0.10"]
   tags = {
-    Name = "primary_network_interface"
+    Name = "primary_network_interface eth0"
   }
 }
 
@@ -12,7 +12,7 @@ resource "aws_network_interface" "eth1" {
   subnet_id   = aws_subnet.my_subnet.id
   private_ips = ["10.0.0.11"]
   tags = {
-    Name = "primary_network_interface"
+    Name = "primary_network_interface eth1"
   }
 }
 # Instances #

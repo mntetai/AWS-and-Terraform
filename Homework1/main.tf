@@ -1,9 +1,29 @@
+#ENIS#
+
+resource "aws_network_interface" "eth0" {
+  subnet_id   = aws_subnet.my_subnet.id
+  private_ips = ["10.0.0.10"]
+  tags = {
+    Name = "primary_network_interface eth0"
+  }
+}
+
+resource "aws_network_interface" "eth1" {
+  subnet_id   = aws_subnet.my_subnet.id
+  private_ips = ["10.0.0.11"]
+  tags = {
+    Name = "primary_network_interface eth1"
+  }
+}
 # Instances #
 resource "aws_instance" "nginx1" {
-  ami                    = "ami-0b5eea76982371e91"
-  instance_type          = "t3.micro"
-  vpc_security_group_ids = [aws_security_group.nginx-sg.id]
+  ami           = data.aws_ami.amazon-linux-2.id
+  instance_type = "t3.micro"
 
+  network_interface {
+    network_interface_id = aws_network_interface.eth0.id
+    device_index         = 0
+  }
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"
@@ -35,10 +55,15 @@ EOF
 
 
 resource "aws_instance" "nginx2" {
-  ami                    = "ami-0b5eea76982371e91"
-  instance_type          = "t3.micro"
-  vpc_security_group_ids = [aws_security_group.nginx-sg.id]
-  key_name               = "provision"
+  ami           = data.aws_ami.amazon-linux-2.id
+  instance_type = "t3.micro"
+  key_name      = "provision"
+
+  network_interface {
+    network_interface_id = aws_network_interface.eth1.id
+    device_index         = 0
+  }
+
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"

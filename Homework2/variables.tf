@@ -15,3 +15,15 @@ variable "map_public_ip_on_launch" {
   description = "map public ip on launch"
   default     = true
 }
+
+variable "db_instances_count" {
+  type = number
+  description = "number of db instances"
+  default = 2
+}
+
+variable "nginx_instances_count" {
+  type = number
+  description = "number of nginx instances"
+  default = 2
+}

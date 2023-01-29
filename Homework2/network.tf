@@ -135,7 +135,7 @@ resource "aws_security_group" "nginx-sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   ingress {
@@ -199,11 +199,34 @@ resource "aws_security_group" "db-sg" {
   }
 }
 
+resource "aws_security_group" "elb-sg" {
+  name   = "homework2-elb_sg"
+  vpc_id = aws_vpc.my_vpc.id
+  # HTTP access from internet
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  # outbound allow all
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name  = "ELB security group"
+    Owner = "Etai Tavor"
+  }
+}
+
 resource "aws_elb" "my_elb" {
   name     = "my-elb"
   internal = false
   #load_balancer_type = "application"
-  security_groups = [aws_security_group.nginx-sg.id]
+  security_groups = [aws_security_group.elb-sg.id]
   subnets         = [aws_subnet.nginx_subnet1.id, aws_subnet.nginx_subnet2.id]
 
   #enable_deletion_protection = false

@@ -16,7 +16,7 @@ resource "aws_instance" "nginx1" {
   sudo amazon-linux-extras install nginx1
   sudo service nginx start
   sudo rm /usr/share/nginx/html/index.html
-  sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey</body></html>" > /usr/share/nginx/html/index.html
+  sudo echo "<html><head><title>Grandpa's Whiskey1</title></head><body>Welcome to Grandpa's Whiskey</body></html>" > /usr/share/nginx/html/index.html
 EOF
 
   tags = {
@@ -45,7 +45,7 @@ resource "aws_instance" "nginx2" {
   sudo amazon-linux-extras install nginx1
   sudo service nginx start
   sudo rm /usr/share/nginx/html/index.html
-  sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey</body></html>" > /usr/share/nginx/html/index.html
+  sudo echo "<html><head><title>Grandpa's Whiskey2</title></head><body>Welcome to Grandpa's Whiskey</body></html>" > /usr/share/nginx/html/index.html
 EOF 
 
 
@@ -72,7 +72,7 @@ resource "aws_instance" "db1" {
   user_data = <<EOF
   #!/bin/bash
   cd ~
-  echo "this is a db server" >> db.txt
+  echo "this is a db server1" >> db.txt
 EOF 
   tags = {
     Name    = "db-1"
@@ -98,7 +98,7 @@ resource "aws_instance" "db2" {
   user_data = <<EOF
   #!/bin/bash
   cd ~
-  echo "this is a db server" >> db.txt
+  echo "this is a db server2" >> db.txt
 EOF 
   tags = {
     Name    = "db-2"

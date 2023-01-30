@@ -16,45 +16,31 @@ resource "aws_internet_gateway" "my_gw" {
 
 #subnet#
 
-resource "aws_subnet" "nginx_subnet1" {
+resource "aws_subnet" "nginx_subnet" {
+  count                   = var.nginx_instances_count
   vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.0.0/24"
+  cidr_block              = var.nginx_cidrs[count.index]
   map_public_ip_on_launch = var.map_public_ip_on_launch
-  availability_zone       = data.aws_availability_zones.available.names[0]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   tags = {
-    Name = "nginx_subnet1"
+    Name = "nginx_subnet${count.index}"
   }
 }
 
-resource "aws_subnet" "nginx_subnet2" {
+
+
+resource "aws_subnet" "db_subnet" {
+  count                   = var.db_instances_count
   vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = var.db_cidrs[count.index]
   map_public_ip_on_launch = var.map_public_ip_on_launch
-  availability_zone       = data.aws_availability_zones.available.names[1]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   tags = {
-    Name = "nginx_subnet2"
+    Name = "db_subnet${count.index}"
   }
 }
 
-resource "aws_subnet" "db_subnet1" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.2.0/24"
-  map_public_ip_on_launch = var.map_public_ip_on_launch
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  tags = {
-    Name = "db_subnet1"
-  }
-}
 
-resource "aws_subnet" "db_subnet2" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.3.0/24"
-  map_public_ip_on_launch = var.map_public_ip_on_launch
-  availability_zone       = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = "db_subnet2"
-  }
-}
 
 #public ip allocations#
 
@@ -66,7 +52,7 @@ resource "aws_eip" "my_nat_public_ip" {
 
 resource "aws_nat_gateway" "my_nat_gw" {
   allocation_id = aws_eip.my_nat_public_ip.id
-  subnet_id     = aws_subnet.nginx_subnet1.id
+  subnet_id     = aws_subnet.nginx_subnet[0].id
 
   tags = {
     Name = "gw NAT"
@@ -104,23 +90,15 @@ resource "aws_route_table" "vpc_route_table_private" {
   }
 }
 
-resource "aws_route_table_association" "route_nginx_subnet1" {
-  subnet_id      = aws_subnet.nginx_subnet1.id
+resource "aws_route_table_association" "route_nginx_subnet" {
+  count          = var.nginx_instances_count
+  subnet_id      = aws_subnet.nginx_subnet[count.index].id
   route_table_id = aws_route_table.vpc_route_table_public.id
 }
 
-resource "aws_route_table_association" "route_db_subnet1" {
-  subnet_id      = aws_subnet.db_subnet1.id
-  route_table_id = aws_route_table.vpc_route_table_private.id
-}
-
-resource "aws_route_table_association" "route_nginx_subnet2" {
-  subnet_id      = aws_subnet.nginx_subnet2.id
-  route_table_id = aws_route_table.vpc_route_table_public.id
-}
-
-resource "aws_route_table_association" "route_db_subnet2" {
-  subnet_id      = aws_subnet.db_subnet2.id
+resource "aws_route_table_association" "route_db_subnet" {
+  count          = var.db_instances_count
+  subnet_id      = aws_subnet.db_subnet[count.index].id
   route_table_id = aws_route_table.vpc_route_table_private.id
 }
 
@@ -222,37 +200,47 @@ resource "aws_security_group" "elb-sg" {
   }
 }
 
-resource "aws_elb" "my_elb" {
-  name     = "my-elb"
-  internal = false
-  #load_balancer_type = "application"
-  security_groups = [aws_security_group.elb-sg.id]
-  subnets         = [aws_subnet.nginx_subnet1.id, aws_subnet.nginx_subnet2.id]
+resource "aws_lb" "my_lb" {
+  name               = "my-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.elb-sg.id]
+  subnets            = [aws_subnet.nginx_subnet[0].id, aws_subnet.nginx_subnet[1].id]
 
-  #enable_deletion_protection = false
+  enable_deletion_protection = false
 
-  listener {
-    instance_port     = 80
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 30
-    target              = "HTTP:80/"
-    interval            = 60
-  }
-
-  instances                 = [aws_instance.nginx1.id, aws_instance.nginx2.id]
-  cross_zone_load_balancing = true
-  idle_timeout              = 400
-  #connection_draining         = true
-  #connection_draining_timeout = 400
   tags = {
     Environment = "test"
     Name        = "my-elb"
   }
+}
+
+resource "aws_lb_target_group" "my_lb" {
+  name     = "alb-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.my_vpc.id
+}
+
+resource "aws_lb_listener" "my_lb" {
+  load_balancer_arn = aws_lb.my_lb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.my_lb.arn
+  }
+
+  tags = {
+    Name  = "lb listener"
+    Owner = "Etai Tavor"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "my_lb" {
+  count            = var.nginx_instances_count
+  target_group_arn = aws_lb_target_group.my_lb.arn
+  target_id        = aws_instance.nginx[count.index].id
+  port             = 80
 }

@@ -17,13 +17,25 @@ variable "map_public_ip_on_launch" {
 }
 
 variable "db_instances_count" {
-  type = number
+  type        = number
   description = "number of db instances"
-  default = 2
+  default     = 2
 }
 
 variable "nginx_instances_count" {
-  type = number
+  type        = number
   description = "number of nginx instances"
-  default = 2
+  default     = 2
+}
+
+variable "nginx_cidrs" {
+  type        = list(string)
+  description = "nginx cidr blocks"
+  default     = ["10.0.0.0/24", "10.0.1.0/24"]
+}
+
+variable "db_cidrs" {
+  type        = list(string)
+  description = "nginx cidr blocks"
+  default     = ["10.0.2.0/24", "10.0.3.0/24"]
 }

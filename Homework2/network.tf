@@ -208,7 +208,7 @@ resource "aws_lb" "my_lb" {
   subnets            = [aws_subnet.nginx_subnet[0].id, aws_subnet.nginx_subnet[1].id]
 
   enable_deletion_protection = false
-
+  
   tags = {
     Environment = "test"
     Name        = "my-elb"
@@ -220,6 +220,16 @@ resource "aws_lb_target_group" "my_lb" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.my_vpc.id
+
+  health_check {
+    path = "/"
+    port = 80
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 20
+    matcher = "200"
+  }
 }
 
 resource "aws_lb_listener" "my_lb" {

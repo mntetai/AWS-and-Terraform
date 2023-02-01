@@ -3,9 +3,9 @@ resource "aws_instance" "nginx" {
   count                  = var.nginx_instances_count
   ami                    = data.aws_ami.amazon-linux-2.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.nginx_subnet[count.index].id
+  subnet_id              = aws_subnet.private_subnet[count.index % var.private_subnet_count].id
   vpc_security_group_ids = [aws_security_group.nginx-sg.id]
-  availability_zone      = data.aws_availability_zones.available.names[count.index]
+  availability_zone      = data.aws_availability_zones.available.names[count.index % 2]
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"
@@ -34,9 +34,9 @@ resource "aws_instance" "db" {
   count                  = var.db_instances_count
   ami                    = data.aws_ami.amazon-linux-2.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.db_subnet[count.index].id
+  subnet_id              = aws_subnet.private_subnet[count.index % var.private_subnet_count].id
   vpc_security_group_ids = [aws_security_group.db-sg.id]
-  availability_zone      = data.aws_availability_zones.available.names[count.index]
+  availability_zone      = data.aws_availability_zones.available.names[count.index % 2]
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"

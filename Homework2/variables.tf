@@ -43,13 +43,13 @@ variable "private_cidrs" {
 variable "nginx_instances_count" {
   type        = number
   description = "number of nginx instances"
-  default     = 5
+  default     = 2
 }
 
 variable "db_instances_count" {
   type        = number
   description = "number of db instances"
-  default     = 5
+  default     = 2
 }
 
 # cidr range addreses #

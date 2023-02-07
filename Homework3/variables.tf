@@ -34,3 +34,8 @@ variable "internet_cidr_range" {
   description = "internet cidr range"
   default     = "0.0.0.0/0"
 }
+
+variable "key_name" {
+  description = "AWS key pair name"
+  default     = "opsschool"
+}

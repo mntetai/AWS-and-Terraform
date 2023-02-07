@@ -1,7 +1,6 @@
 module "vpc" {
-  source = "./modules/vpc" 
+  source = "./modules/vpc"
 }
-
 
 # Instances #
 resource "aws_instance" "nginx" {
@@ -11,6 +10,7 @@ resource "aws_instance" "nginx" {
   subnet_id              = module.vpc.private_subnets[count.index % module.vpc.private_subnet_count]
   vpc_security_group_ids = [aws_security_group.nginx-sg.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % 2]
+  key_name               = var.key_name
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"
@@ -23,6 +23,7 @@ resource "aws_instance" "nginx" {
   sudo service nginx start
   sudo rm /usr/share/nginx/html/index.html
   sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey <br> Host - $(hostname)</body></html>" > /usr/share/nginx/html/index.html
+  #sudo echo "aws s3 cp /var/log/nginx/access.log s3://lb-logs-etai/nginx-logs/access.log" >> /etc/cron.hourly/copy_nginx_log.sh
 EOF
 
   tags = {
@@ -39,6 +40,7 @@ resource "aws_instance" "db" {
   subnet_id              = module.vpc.private_subnets[count.index % module.vpc.private_subnet_count]
   vpc_security_group_ids = [aws_security_group.db-sg.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % 2]
+  key_name               = var.key_name
   root_block_device {
     volume_size           = "10"
     volume_type           = "gp2"

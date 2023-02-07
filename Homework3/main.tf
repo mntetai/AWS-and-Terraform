@@ -23,6 +23,7 @@ resource "aws_instance" "nginx" {
   sudo service nginx start
   sudo rm /usr/share/nginx/html/index.html
   sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey <br> Host - $(hostname)</body></html>" > /usr/share/nginx/html/index.html
+  #sudo echo "aws s3 cp /var/log/nginx/access.log s3://lb-logs-etai/nginx-logs/access.log" >> /etc/cron.hourly/copy_nginx_log.sh
 EOF
 
   tags = {

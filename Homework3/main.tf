@@ -1,9 +1,14 @@
+module "vpc" {
+  source = "./modules/vpc" 
+}
+
+
 # Instances #
 resource "aws_instance" "nginx" {
   count                  = var.nginx_instances_count
   ami                    = data.aws_ami.amazon-linux-2.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.private_subnet[count.index % var.private_subnet_count].id
+  subnet_id              = module.vpc.private_subnets[count.index % module.vpc.private_subnet_count]
   vpc_security_group_ids = [aws_security_group.nginx-sg.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % 2]
   root_block_device {
@@ -17,7 +22,7 @@ resource "aws_instance" "nginx" {
   sudo amazon-linux-extras install nginx1
   sudo service nginx start
   sudo rm /usr/share/nginx/html/index.html
-  sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey <br> Host ${count.index}</body></html>" > /usr/share/nginx/html/index.html
+  sudo echo "<html><head><title>Grandpa's Whiskey</title></head><body>Welcome to Grandpa's Whiskey <br> Host - $(hostname)</body></html>" > /usr/share/nginx/html/index.html
 EOF
 
   tags = {
@@ -27,14 +32,11 @@ EOF
   }
 }
 
-
-
-
 resource "aws_instance" "db" {
   count                  = var.db_instances_count
   ami                    = data.aws_ami.amazon-linux-2.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.private_subnet[count.index % var.private_subnet_count].id
+  subnet_id              = module.vpc.private_subnets[count.index % module.vpc.private_subnet_count]
   vpc_security_group_ids = [aws_security_group.db-sg.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % 2]
   root_block_device {
@@ -55,4 +57,3 @@ EOF
     Purpose = "db"
   }
 }
-

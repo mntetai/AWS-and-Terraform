@@ -12,5 +12,5 @@ output "aws_instances-db-public_dns" {
 }
 
 output "aws_nat_gateway-my_nat_gw-public_ip" {
-  value = aws_nat_gateway.my_nat_gw.public_ip
+  value = module.vpc.my_nat_gw.public_ip
 }

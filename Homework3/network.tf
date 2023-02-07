@@ -1,3 +1,10 @@
+module "web_app_s3" {
+  source = "./modules/web-app-s3"
+
+  bucket_name             = local.s3_bucket_name
+  elb_service_account_arn = data.aws_elb_service_account.root.arn
+}
+
 
 # SECURITY GROUPS #
 
@@ -127,17 +134,13 @@ resource "aws_security_group_rule" "outbound-allow-all-elb" {
 
 #resource "aws_s3_bucket" "lb_logs" {
 #  bucket = "lb-logs-etai"
-#
+
 #  tags = {
 #    Name        = "lb-logs-etai"
 #    Environment = "test"
 #  }
 #}
 
-#resource "aws_s3_bucket_acl" "example" {
-#  bucket = aws_s3_bucket.lb_logs.id
-#  acl    = "private"
-#}
 
 resource "aws_lb" "my_lb" {
   name               = "my-lb"
@@ -148,11 +151,11 @@ resource "aws_lb" "my_lb" {
 
   enable_deletion_protection = false
 
-  #access_logs {
-  #  bucket  = aws_s3_bucket.lb_logs.bucket
-  #  enabled = true
-  #}
-
+  access_logs {
+    bucket  = module.web_app_s3.web_bucket.id
+    prefix  = "alb-logs"
+    enabled = true
+  } 
   tags = {
     Environment = "test"
     Name        = "my-elb"

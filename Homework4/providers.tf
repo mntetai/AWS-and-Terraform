@@ -5,17 +5,19 @@ terraform {
       version = "~> 4.16"
     }
   }
-  backend "s3" {
-    bucket = "terraform-state-etai"
-    key    = "aws-and-terraform-state"
-    region = "us-east-1"
+  backend "remote" {
+    organization = "etai-tavor-company"
+
+    workspaces {
+      name = "AWS-and-Terraform"
+    }
   }
   required_version = ">= 1.2.0"
 }
 
 provider "aws" {
   region                   = var.AWS_region
-  shared_config_files      = ["~/.aws/config"]
-  shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = "ec2admin"
+  #shared_config_files      = ["/home/ec2-user/.aws/config"]
+  shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
+  #profile                  = "ec2admin"
 }

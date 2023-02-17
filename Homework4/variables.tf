@@ -13,13 +13,13 @@ variable "enable_dns_hostnames" {
 variable "nginx_instances_count" {
   type        = number
   description = "number of nginx instances"
-  default     = 2
+  default     = 4
 }
 
 variable "db_instances_count" {
   type        = number
   description = "number of db instances"
-  default     = 2
+  default     = 4
 }
 
 # cidr range addreses #

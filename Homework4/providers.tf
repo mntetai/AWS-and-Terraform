@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "aws" {
-  region                   = var.AWS_region
+  region = var.AWS_region
   #shared_config_files      = ["/home/ec2-user/.aws/config"]
   shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
   #profile                  = "ec2admin"

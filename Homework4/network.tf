@@ -1,5 +1,6 @@
 module "web_app_s3" {
-  source = "./modules/web-app-s3"
+  source  = "app.terraform.io/etai-tavor-company/Terraform-Web-app-s3/and"
+  version = "1.0.0"
 
   bucket_name             = local.s3_bucket_name
   elb_service_account_arn = data.aws_elb_service_account.root.arn
@@ -155,7 +156,7 @@ resource "aws_lb" "my_lb" {
     bucket  = module.web_app_s3.web_bucket.id
     prefix  = "alb-logs"
     enabled = true
-  } 
+  }
   tags = {
     Environment = "test"
     Name        = "my-elb"

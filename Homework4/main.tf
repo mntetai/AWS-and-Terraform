@@ -1,5 +1,6 @@
 module "vpc" {
-  source = "./modules/vpc"
+  source  = "app.terraform.io/etai-tavor-company/Terraform-VPC/and"
+  version = "1.0.0"
 }
 
 # Instances #

@@ -1,5 +1,5 @@
 module "vpc" {
-  source  = "app.terraform.io/etai-tavor-company/Terraform-VPC/and"
+  source  = "app.terraform.io/etai-tavor-company/VPC/AWS"
   version = "1.0.0"
 }
 

@@ -1,6 +1,6 @@
 module "web_app_s3" {
-  source  = "app.terraform.io/etai-tavor-company/Terraform-Web-app-s3/and"
-  version = "1.0.0"
+  source  = "app.terraform.io/etaitavorcompany/Webapps3/etaitavorco"
+  version = "1.0.2"
 
   bucket_name             = local.s3_bucket_name
   elb_service_account_arn = data.aws_elb_service_account.root.arn

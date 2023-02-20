@@ -1,5 +1,5 @@
 module "web_app_s3" {
-  source  = "app.terraform.io/etaitavorcompany/Webapps3/etaitavorco"
+  source  = "app.terraform.io/etai-tavor-company/Webapps3/etaitavorco"
   version = "1.0.2"
 
   bucket_name             = local.s3_bucket_name

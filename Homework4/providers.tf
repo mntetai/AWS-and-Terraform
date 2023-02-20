@@ -5,6 +5,7 @@ terraform {
       version = "~> 4.16"
     }
   }
+  # remote backend #
   backend "remote" {
     organization = "etai-tavor-company"
 
